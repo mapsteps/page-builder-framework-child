@@ -7,57 +7,40 @@ var reload = browserSync.reload;
 var manifest = require('./assets/manifest.json');
 var config = manifest.config;
 
-// Scripts Task
-// Minify JS
-gulp.task('scripts', function(){
+// Scripts task.
+gulp.task('scripts', function() {
 	gulp.src('assets/js/*.js')
 	.pipe(plumber())
 	.pipe(uglify())
 	.pipe(gulp.dest('js'))
 	.pipe(reload({ stream: true }))
-
 });
 
-// Styles Task
-// Compile Main Styles
-// gulp.task('styles', function() {
-// 	return sass('assets/scss/style.scss', {
-// 		style: 'compressed' 
-// 	})
-// 	.pipe(gulp.dest(''))
-// 	.pipe(reload({ stream: true }))
-
-// });
-
-
-gulp.task('styles', function(){
+// Styles task.
+gulp.task('styles', function() {
 	return gulp.src('assets/scss/style.scss')
-	.pipe(sass({outputStyle: 'compressed'}))  // Converts Sass to CSS with gulp-sass
+	.pipe(sass({outputStyle: 'compressed'}))
 	.pipe(gulp.dest(''))
 	.pipe(reload({ stream: true }))
 });
 
-
-//Browser Sync
+// Browsersync.
 gulp.task('serve', function() {
 	browserSync.init( {
-	 	proxy: "http://" + config.url,
-	 	host: config.host,
-	 	notify: false,
-	 });
+		proxy: "http://" + config.url,
+		host: config.host,
+		notify: false,
+	});
 });
 
-
-
-// Watch Tasks
+// Watch tasks.
 gulp.task('watch', function() {
-	// Styles & Scripts to be watched
+	// Scripts & styles.
 	gulp.watch('assets/js/*.js', ['scripts']);
 	gulp.watch('assets/scss/**/*.scss', ['styles']);
-	// browserSync
+	// Browsersync.
 	gulp.watch('**/*.php').on('change', reload);
+});
 
-})
-
-// Gulp
+// Gulp.
 gulp.task('default', ['scripts', 'styles', 'watch', 'serve']);
