@@ -1,21 +1,32 @@
 <?php
+/**
+ * Functions.
+ *
+ * @package Page Builder Framework Child
+ */
 
-// Child Theme Setup
+defined( 'ABSPATH' ) || die( "Can't access directly" );
+
+/**
+ * Child theme setup.
+ */
 function wpbf_child_theme_setup() {
 
-	// Child Theme Textdomain
+	// Textdomain.
 	load_child_theme_textdomain( 'page-builder-framework-child', WPBF_CHILD_THEME_DIR . '/languages' );
 
 }
 add_action( 'after_setup_theme', 'wpbf_child_theme_setup' );
 
-// Enqueue Child Theme Scripts and Styles
+/**
+ * Enqueue scripts & styles.
+ */
 function wpbf_child_scripts() {
 
-	// Styles
+	// Styles.
 	wp_enqueue_style( 'wpbf-style-child', WPBF_CHILD_THEME_URI . '/style.css', false, WPBF_CHILD_VERSION );
 
-	// Scripts (uncomment if needed!)
+	// Scripts (uncomment if needed).
 	// wp_enqueue_script( 'wpbf-site-child', WPBF_CHILD_THEME_URI . '/js/site-child.js', false, WPBF_CHILD_VERSION, true );
 
 }
