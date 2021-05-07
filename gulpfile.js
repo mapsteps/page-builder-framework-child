@@ -61,7 +61,7 @@ function watchChanges(cb) {
 
 	watch(['assets/scss/**/*.scss'], parallel(compileStyleSCSS));
 
-	watch(['**/*.php', 'assets/img/*'], parallel(reloadPage));
+	watch(['**/*.php'], parallel(reloadPage));
 
 	cb();
 }
