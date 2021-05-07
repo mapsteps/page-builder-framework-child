@@ -1,46 +1,76 @@
-var gulp = require('gulp');
-var plumber = require('gulp-plumber');
-var uglify = require('gulp-uglify');
-var sass = require('gulp-sass');
-var browserSync = require('browser-sync').create();
-var reload = browserSync.reload;
-var manifest = require('./assets/manifest.json');
+const { src, dest, watch, parallel, series } = require('gulp');
+const plumber = require('gulp-plumber');
+const uglify = require('gulp-uglify');
+const sass = require('gulp-dart-sass');
+const autoprefixer = require('gulp-autoprefixer');
+const babel = require('gulp-babel');
+const browserSync = require('browser-sync').create();
+var manifest = require('./manifest.json');
 var config = manifest.config;
 
-// Scripts task.
-gulp.task('scripts', function() {
-	gulp.src('assets/js/*.js')
-	.pipe(plumber())
-	.pipe(uglify())
-	.pipe(gulp.dest('js'))
-	.pipe(reload({ stream: true }))
-});
+function compileStyleSCSS() {
+	return src(['assets/scss/style.scss'])
+		.pipe(sass({ outputStyle: 'compressed' }))
+		.pipe(autoprefixer())
+		.pipe(dest('./'))
+		.pipe(browserSync.stream());
+}
 
-// Styles task.
-gulp.task('styles', function() {
-	return gulp.src('assets/scss/style.scss')
-	.pipe(sass({outputStyle: 'compressed'}))
-	.pipe(gulp.dest(''))
-	.pipe(reload({ stream: true }))
-});
+function buildSiteJS() {
+	return src([
+		'assets/js/*.js'
+	])
+		.pipe(plumber())
+		.pipe(babel({
+			presets: ['@babel/preset-env']
+		}))
+		.pipe(uglify())
+		.pipe(dest('js'))
+		.pipe(browserSync.reload({ stream: true }));
+}
 
-// Browsersync.
-gulp.task('serve', function() {
-	browserSync.init( {
-		proxy: "http://" + config.url,
-		host: config.host,
-		notify: false,
+function serveBrowserSync(cb) {
+	browserSync.init({
+		proxy: config.url,
+		ui: {
+			port: 3060,
+		},
+		notify: true,
 	});
-});
 
-// Watch tasks.
-gulp.task('watch', function() {
-	// Scripts & styles.
-	gulp.watch('assets/js/*.js', ['scripts']);
-	gulp.watch('assets/scss/**/*.scss', ['styles']);
-	// Browsersync.
-	gulp.watch('**/*.php').on('change', reload);
-});
+	cb();
+}
 
-// Gulp.
-gulp.task('default', ['scripts', 'styles', 'watch', 'serve']);
+function streamAssets(cb) {
+	browserSync.stream();
+	cb();
+}
+
+function reloadStream(cb) {
+	browserSync.reload({ stream: true });
+	cb();
+}
+
+function reloadPage(cb) {
+	browserSync.reload();
+	cb();
+}
+
+function watchChanges(cb) {
+	watch(['assets/js/*.js'], parallel(buildSiteJS));
+
+	watch(['assets/scss/**/*.scss'], parallel(compileStyleSCSS));
+
+	watch(['**/*.php', 'assets/img/*'], parallel(reloadPage));
+
+	cb();
+}
+
+function mainTasks(cb) {
+	buildSiteJS();
+	compileStyleSCSS();
+
+	cb();
+}
+
+exports.default = parallel(serveBrowserSync, mainTasks, watchChanges);
