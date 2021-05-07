@@ -9,3 +9,6 @@ package-lock.json
 
 # DS_Store
 .DS_Store
+
+# Developer tooling
+manifest.json
