@@ -41,16 +41,6 @@ function serveBrowserSync(cb) {
 	cb();
 }
 
-function streamAssets(cb) {
-	browserSync.stream();
-	cb();
-}
-
-function reloadStream(cb) {
-	browserSync.reload({ stream: true });
-	cb();
-}
-
 function reloadPage(cb) {
 	browserSync.reload();
 	cb();
