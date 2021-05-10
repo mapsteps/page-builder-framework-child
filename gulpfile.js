@@ -49,7 +49,7 @@ function reloadPage(cb) {
 function watchChanges(cb) {
 	watch(['assets/js/*.js'], parallel(buildSiteJS));
 
-	watch(['assets/scss/**/*.scss'], parallel(compileStyleSCSS));
+	watch(['assets/scss/style.scss', 'assets/scss/**/*.scss'], parallel(compileStyleSCSS));
 
 	watch(['**/*.php'], parallel(reloadPage));
 
